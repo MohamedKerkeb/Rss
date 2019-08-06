@@ -16,21 +16,47 @@ const PORT = 3003
 
 let title = [];
 
-const urlAxios = ['http://www.reddit.com/.rss', 'https://www.theverge.com/google/rss/index.xml', 'https://korben.info/feed']
+    let reddit 
+    let verge 
+    let korben 
 
-const getRss = (res) => {
+const urlAxios = ['http://www.reddit.com/.rss', 'https://www.theverge.com/google/rss/index.xml', 'https://9gag-rss.com/api/rss/get?code=9GAGHot&format=1']
+
+const getRss = () => {
+    
     return Axios.all(
         [
             Axios.get(urlAxios[0]),
             Axios.get(urlAxios[1]),
             Axios.get(urlAxios[2])
         ]
-    ).then(Axios.spread((url1, url2,url3) => {
-        parseString(url2.data, (err, result) => {
+    ).then(Axios.spread( (url1, url2,url3) => {
+
+        reddit = url1.data
+        verge =  url2.data
+        korben =  url3.data
+
+        parseRss(reddit, verge, korben)
+    })).catch( err => console.log(err))
+}
+
+const parseRss = (reddit, verge, korben) => {
+    let arr = [reddit, verge, korben]
+    for (let a of arr ) {
+        parseString(a, (err, result ) => {
             console.log(result)
         })
+
+    }
+    // parseString(reddit, (err, result ) => {
+    //     if (err) {
+    //         throw err
+    //     } else {
+    //         console.log('res', result)
+    //         return result
+    //     }
         
-    }))
+    // })
 }
 
 
@@ -53,14 +79,9 @@ const getRss = (res) => {
 
 
 
-app.get('/', async (req, res) => {
-
-    //console.log(res)
-    getRss(res);
-    
-    //const response = await getRss();
-    //console.log('lol', response)
-    //res.send('hello word')
+app.get('/',  (req, res) => {
+    getRss();
+    //parseRss(res)
 })
 
 
